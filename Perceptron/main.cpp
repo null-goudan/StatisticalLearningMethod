@@ -143,7 +143,7 @@ int main(){
     w.push_back(0);
     // train
     double lr = 1.0f;
-    training(train_dataset, 2, w, bias, lr, 3);
+    training(train_dataset, 2, w, bias, lr, 8);
     cout<<"w: ";
     for(auto i : w){
         cout<<i<<" ";
