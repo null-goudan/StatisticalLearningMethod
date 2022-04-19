@@ -117,24 +117,24 @@ int main(){
     // read train dataset
     Read_trainDataset(train_dataset, trainSet_path, 2);
     Read_testDataset(test_dataset, testSet_path, 2);
-    cout<<"train dataset: "<<endl;
-    for(auto i : train_dataset){
-        cout<< "feature: ";
-        for(auto j: i.first){
-            cout<<j<<" ";
-        }
-        cout<<" label :";
-        cout<<i.second<<endl;
-    }
-    cout<<"test dataset: "<<endl;
-    for(auto i : test_dataset){
-        cout<< "feature: ";
-        for(auto j: i.first){
-            cout<<j<<" ";
-        }
-        cout<<" label :";
-        cout<<i.second<<endl;
-    }
+    // cout<<"train dataset: "<<endl;
+    // for(auto i : train_dataset){
+    //     cout<< "feature: ";
+    //     for(auto j: i.first){
+    //         cout<<j<<" ";
+    //     }
+    //     cout<<" label :";
+    //     cout<<i.second<<endl;
+    // }
+    // cout<<"test dataset: "<<endl;
+    // for(auto i : test_dataset){
+    //     cout<< "feature: ";
+    //     for(auto j: i.first){
+    //         cout<<j<<" ";
+    //     }
+    //     cout<<" label :";
+    //     cout<<i.second<<endl;
+    // }
     vector<double> predict_data;
     // initial weight and bias as 0
     vector<double> w;
@@ -144,12 +144,12 @@ int main(){
     // train
     double lr = 1.0f;
     training(train_dataset, 2, w, bias, lr, 8);
-    cout<<"w: ";
+    cout<<"Result: \tf(x) = sign(";
+    int cnt = 1;
     for(auto i : w){
-        cout<<i<<" ";
+        cout<<"("<<i<<")"<<"*x("<<cnt++<<")+";
     }
-    cout<<endl;
-    cout<<"b: "<<bias<<endl;
+    cout<<"("<<bias<<"))"<<endl;
     return 0;
 }
 #endif 
