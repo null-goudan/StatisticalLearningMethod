@@ -1,6 +1,4 @@
 #include <iostream>
-#include "perceptron.h"
-#include "model.h"
 
 #include <vector>
 #include <utility>
