@@ -83,6 +83,7 @@ void Knn_manager::input_trainData_Mset(int feature_num, const string filepath){
             while(getline(ss, temp, ' ')){
                 if(i  == feature_num){
                     per.label = stod(temp);
+                    //  cout<<"read label :"<<per.label<<endl;
                 }
                 else{
                     per.X.push_back(stod(temp));
@@ -112,6 +113,7 @@ void Knn_manager::input_testData_Mset(int feature_num, const string filepath){
             while(getline(ss, temp, ' ')){
                 if(i  == feature_num){
                     per.label = stod(temp);
+                    // cout<<"read label :"<<per.label<<endl;
                 }
                 else{
                     per.X.push_back(stod(temp));
@@ -142,13 +144,13 @@ string Knn_manager::knn(Data_M& x){
         m[i] = 0;
     }
     for(int i =0;i<k;i++){
-        cout<<"max i th :"<<train_dataSet[i].dis<<endl;
-        cout<<"feature :";
-        for(int j=0;j<4;j++){
-            cout<<train_dataSet[i].X[j]<<" ";
-        }
-        cout<<"label: "<<train_dataSet[i].label;
-        cout<<endl;
+        // cout<<"max i th :"<<train_dataSet[i].dis<<endl;
+        // cout<<"feature :";
+        // for(int j=0;j<4;j++){
+        //     cout<<train_dataSet[i].X[j]<<" ";
+        // }
+        // cout<<"label: "<<train_dataSet[i].label;
+        // cout<<endl;
         m[train_dataSet[i].label]++;
     }
     double max = -1;
@@ -169,7 +171,7 @@ int main(){
     cout<<"input k"<<endl;
     cin>>k;
     Knn_manager knn(k);
-    knn.input_trainData_Mset(4, "./train.txt");
+    knn.input_trainData_Mset(5, "./train.txt");
     Data_M x;
     for(int i =0;i<4;i++){
         double da;
