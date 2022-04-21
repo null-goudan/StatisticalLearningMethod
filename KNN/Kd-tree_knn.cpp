@@ -4,9 +4,11 @@
 #include <map>
 #include <algorithm>
 #include <math.h>
+#include <queue>
 using namespace std;
 
-typedef struct kd_data{
+typedef class kd_data{
+public:
     vector<double> X;
     int label;
 }KD_DATA;
@@ -52,7 +54,7 @@ class kd_tree{
     private:
         kd_tree_node* root;
         int size;
-        kd_tree_node* BuildKDTree(const std::vector<KD_DATA>& point_cloud, int split_dim = 0);
+        kd_tree_node* BuildKDTree(std::vector<KD_DATA>& point_cloud, int split_dim);
 };  
 /*
 algorithm:
@@ -63,15 +65,14 @@ algorithm:
 */
 kd_tree::kd_tree(vector<KD_DATA> train_dataSet){
     this->size = train_dataSet.size();
-	this->root = BuildKDTree(train_dataSet);
+	this->root = BuildKDTree(train_dataSet, 0);
 }
 
-kd_tree_node* kd_tree::BuildKDTree(const std::vector<KD_DATA>& point_cloud, int split_dim = 0){
-    
+kd_tree_node* kd_tree::BuildKDTree(std::vector<KD_DATA>& point_cloud, int split_dim){
     if(point_cloud.size() == 0){
         return nullptr;
     }
-    sort(point_cloud.begin(), point_cloud.end(), [this, split_dim](KD_DATA a,KD_DATA b){
+    sort(point_cloud.begin(), point_cloud.end(), [split_dim](KD_DATA a,KD_DATA b){
         return a.X[split_dim] < b.X[split_dim];
     });
     int mid_idx = point_cloud.size() / 2;
@@ -103,5 +104,68 @@ kd_tree_node* kd_tree::BuildKDTree(const std::vector<KD_DATA>& point_cloud, int 
 }
 
 void kd_tree::printKD_tree(){
-    
+    queue<pair<kd_tree_node*, int>> nodes;
+    nodes.push(pair<kd_tree_node*, int>(this->root, 0));
+    int last_layer = 0;
+    while(!nodes.empty()){
+        auto curnode = nodes.front();
+        if(curnode.first!=nullptr){
+            if(curnode.second > last_layer){
+                last_layer ++;
+                cout<<endl;
+            }
+            if(curnode.second<last_layer){
+                cout<<"(";
+                for(auto item : curnode.first->data.X){
+                    cout<<item<<",";
+                }
+                cout<<") ";
+            }else{
+                cout<<"(";
+                for(auto item : curnode.first->data.X){
+                    cout<<item<<",";
+                }
+                cout<<") ";
+            }
+            nodes.push(pair<kd_tree_node*, int>(curnode.first->left, curnode.second+1));
+            nodes.push(pair<kd_tree_node*, int>(curnode.first->right, curnode.second));
+        }
+        nodes.pop();
+    }
+}
+
+int main(){
+    vector<KD_DATA> trainset;
+    KD_DATA data1;
+    data1.X.push_back(2);
+    data1.X.push_back(3);
+    trainset.push_back(data1);
+    data1.X.clear();
+    data1.X.push_back(5);
+    data1.X.push_back(4);
+    trainset.push_back(data1);
+    data1.X.clear();
+    data1.X.push_back(9);
+    data1.X.push_back(6);
+    trainset.push_back(data1);
+    data1.X.clear();
+    data1.X.push_back(4);
+    data1.X.push_back(7);
+    trainset.push_back(data1);
+    data1.X.clear();
+    data1.X.push_back(8);
+    data1.X.push_back(1);
+    trainset.push_back(data1);
+    data1.X.clear();
+    data1.X.push_back(7);
+    data1.X.push_back(2);
+    trainset.push_back(data1);
+    for(auto i : trainset){
+        cout<<i.X[0]<<"\t";
+    }
+    cout<<endl;
+    cout<<"train dataset is finished"<<endl;
+    kd_tree k(trainset);
+    k.printKD_tree();
+    return 0;
 }
