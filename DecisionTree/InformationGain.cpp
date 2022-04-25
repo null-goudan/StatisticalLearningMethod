@@ -96,7 +96,7 @@ int main(){
     readDataset(Dataset, feature_num, "./train.txt");
     for(int i=0;i<feature_num;i++){
         double res = InformationGain(Dataset, i);
-        cout << "the infomation gain of A is "<<res<<endl;
+        cout << "the infomation gain of A"<<i<<" is "<<res<<endl;
         if(max_res <= res){
             max_res = res;
             index = i;
