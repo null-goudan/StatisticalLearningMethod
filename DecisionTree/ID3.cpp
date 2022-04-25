@@ -99,7 +99,7 @@ ID3_Tree_Node* ID3_Tree::build_Tree(vector<Data> D, set<Attr> A){
     cout<<"get all infomation gains successful"<<endl;
     pair<int, double> Ag;
     Ag.first = -1;
-    Ag.second = INT32_MIN;
+    Ag.second = 0.0;
     for(auto i : infogains){
         if(i.second > Ag.second){
             Ag.first = i.first;
@@ -120,19 +120,19 @@ ID3_Tree_Node* ID3_Tree::build_Tree(vector<Data> D, set<Attr> A){
     if(earth.threhold > Ag.second){
         cout<<"the threhold is bigger than Ag's infomation gains"<<endl;
         ID3_Tree_Node* aa = new ID3_Tree_Node(this->max_class);
-        cout<<"new successful"<<endl;
         ID3_Tree_Node* res = aa;
-        cout<<"res = aa"<<endl;
         return res;
     }
     // (5)
     split_Dataset(D, Ag.first);
+    get_allInfoGains(D, A);
+    statistic(D, A);
     ID3_Tree_Node* res = new ID3_Tree_Node(earth, nullptr, nullptr);
     res->left = new ID3_Tree_Node(max_class);
     // (6)
     set<Attr>::iterator ag;
     for(ag = A.begin(); ag!=A.end(); ag++){
-        if(ag->feature_index==Ag.first&&ag->threhold==Ag.second){
+        if(ag->feature_index==earth.feature_index&&ag->threhold==earth.threhold){
             break;
         }
     }
@@ -142,12 +142,18 @@ ID3_Tree_Node* ID3_Tree::build_Tree(vector<Data> D, set<Attr> A){
 }
 
 double ID3_Tree::get_InformationGain(vector<Data> D, int feature_A){
-    map<int, map<int, int>> m;
+    // (1) calc the empirical entorpy of dataset D :  H(D)
+    m_Y.clear();
+    Y_set.clear();
     m_X.clear();
     X_set.clear();
+    map<int, map<int, int>> m;
+    
     double H_D = 0.0;
     double H_D_A = 0.0;
     for(auto i: D){
+        Y_set.insert(i.label);
+        m_Y.insert(i.label);
         m_X.insert(i.X[feature_A]);
         X_set.insert(i.X[feature_A]);
         m[i.X[feature_A]][i.label] ++;
@@ -179,13 +185,17 @@ void ID3_Tree::update_maxclass(vector<Data> D){
 }
 
 void ID3_Tree::statistic(vector<Data> D, set<Attr> feature_set){
-    update_maxclass(D);
+    max_class = -1;
     this->best_feature_index = get_bestFeature();
+    update_maxclass(D);
+    cout<<"max_class\t"<<max_class<<endl;
 }
 
 void ID3_Tree::get_allInfoGains(vector<Data> D, set<Attr> feature_set){
+    infogains.clear();
     for(auto i:feature_set){
         infogains[i.feature_index] = get_InformationGain(D, i.feature_index);
+        printf("infogains[%d] = %lf\n", i.feature_index, infogains[i.feature_index]);
     }
 }
 
@@ -204,8 +214,12 @@ int ID3_Tree::get_bestFeature(){
 }
 
 void ID3_Tree::split_Dataset(vector<Data>& out, int feature_index){
+    int cnt = 0;
     for(auto i: out){
-        i.X.erase(i.X.begin()+feature_index);
+        if(i.label == this->max_class){
+            out.erase(out.begin()+cnt);
+        }
+        ++cnt;
     }
 }
 
@@ -243,6 +257,8 @@ void ID3_Tree::printTree(ID3_Tree_Node* pnode){
     printTree(pnode->left);
     if(pnode->class_res!=-1){
         cout<<pnode->class_res<<"\t";
+    }else{
+        cout<<"("<<pnode->data.feature_index<<","<<pnode->data.threhold<<")\t";
     }
     printTree(pnode->right);
 }
@@ -258,5 +274,5 @@ int main(){
     cout<<"attrs set loaded"<<endl;
     ID3_Tree tree(traindataset, attrs);
     tree.printTree(tree.root);
-
+    return 0;
 }
