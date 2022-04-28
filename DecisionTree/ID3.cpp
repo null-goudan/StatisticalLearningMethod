@@ -88,15 +88,17 @@ ID3_Tree::ID3_Tree(vector<Data> Dataset, set<Attr> earth){
 
 // :TODO
 ID3_Tree_Node* ID3_Tree::build_Tree(vector<Data> D, set<Attr> A){
+    cout<<"get all infomation gains successful"<<endl;
     printf("building start....\n");
+    statistic(D, A);
     if(A.empty() || m_Y.size() == 1){
         cout<<"A empty or m_Y size is one"<<endl;
         ID3_Tree_Node* res = new ID3_Tree_Node(this->max_class);
         return res;
     }
+    
     cout<<"Not  A empty or m_Y size is one"<<endl;
     get_allInfoGains(D, A);
-    cout<<"get all infomation gains successful"<<endl;
     pair<int, double> Ag;
     Ag.first = -1;
     Ag.second = 0.0;
@@ -126,7 +128,7 @@ ID3_Tree_Node* ID3_Tree::build_Tree(vector<Data> D, set<Attr> A){
     // (5)
     split_Dataset(D, Ag.first);
     get_allInfoGains(D, A);
-    statistic(D, A);
+    get_bestFeature();
     ID3_Tree_Node* res = new ID3_Tree_Node(earth, nullptr, nullptr);
     res->left = new ID3_Tree_Node(max_class);
     // (6)
@@ -215,11 +217,16 @@ int ID3_Tree::get_bestFeature(){
 
 void ID3_Tree::split_Dataset(vector<Data>& out, int feature_index){
     int cnt = 0;
+    vector<int> erase_index;
     for(auto i: out){
+        i.X.erase(i.X.begin()+feature_index);
         if(i.label == this->max_class){
-            out.erase(out.begin()+cnt);
+            erase_index.push_back(cnt);
         }
         ++cnt;
+    }
+    for(auto i :erase_index){
+        out.erase(out.begin()+i);
     }
 }
 
