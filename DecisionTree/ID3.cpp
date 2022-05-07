@@ -60,7 +60,6 @@ class ID3_Tree{
         void printTree(ID3_Tree_Node* pnode);
         ID3_Tree_Node* root;
     private:
-        
         multiset<int> m_X;
         multiset<int> m_Y;
         set<int> X_set;
@@ -86,7 +85,6 @@ ID3_Tree::ID3_Tree(vector<Data> Dataset, set<Attr> earth){
     root = this->build_Tree(Dataset, earth);
 }
 
-// :TODO
 ID3_Tree_Node* ID3_Tree::build_Tree(vector<Data> D, set<Attr> A){
     cout<<"get all infomation gains successful"<<endl;
     printf("building start....\n");
