@@ -51,9 +51,8 @@ with open('./weight.txt', 'r') as f:
     lines = f.readlines()
     for line in lines:
         ws = line.split()
-        weights = [float(x) for x in ws[0:-1]]
-        bias = float(ws[-1])
+        weights = [float(x) for x in ws]
 x = np.arange(-3.0,3.0,0.1)
-y =  (-weights[0]+ weights[1]*x ) + bias
+y =  (-weights[0]+ weights[1]*x )
 ax.plot(x,y)
 plt.show()

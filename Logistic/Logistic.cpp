@@ -10,7 +10,7 @@
 using namespace std;
 
 double sigmoid(double x);
-double scalarProduct(vector<double> w, vector<double> x, double bias = 0);
+double scalarProduct(vector<double> w, vector<double> x);
 void GradAscent(vector<vector<double>> DataSet_Feature, vector<double> Label, vector<double>& weight, double alpha);
 vector<vector<double>> MatTransponse(vector<vector<double>> Mat);
 
@@ -22,7 +22,7 @@ class Logistic{
             loadDataset(feature_num, filename);
             this->weight = vector<double>(feature_num);
         }
-        void train(int iterNum, double lr = 0.003, void(*)(vector<vector<double>>, vector<double>, vector<double>&, double)=GradAscent);
+        void train(int iterNum, double lr = 0.001, void(*)(vector<vector<double>>, vector<double>, vector<double>&, double)=GradAscent);
         void loadDataset(int feature_num, string filename);
         inline int pridict(vector<double> feature);
         inline vector<double> get_labels();
@@ -92,14 +92,8 @@ void Logistic::train(int iterNum, double lr, void(* train_method)(vector<vector<
 }
 
 inline int Logistic::pridict(vector<double> feature){
-    const int size = this->weight.size();
-    double res = 0.0;
-    for(int i =0;i<size;i++){
-        res +=  feature[i] * this->weight[i];
-    }
-    cout<< res<<" ";
-    res = sigmoid(res);
-    cout<<res<< " " ;
+    double res = scalarProduct(this->weight, feature);
+    cout<<res<<endl;
     if(res>=0.5){
         return 1;
     }
@@ -109,14 +103,13 @@ inline int Logistic::pridict(vector<double> feature){
 }
 
 double sigmoid(double x){
-    return exp(x) / (1 + exp(x));
+    return exp(x) / (1 + exp(-x));
 }
 
-double scalarProduct(vector<double> w, vector<double> x, double bias){
+double scalarProduct(vector<double> w, vector<double> x){
     double ret=0;
     for(int i=0;i<w.size();i++)
         ret+=w[i]*x[i];
-    ret += bias;
     return ret;
 }
 
@@ -126,8 +119,11 @@ void GradAscent(vector<vector<double>> DataSet_Feature, vector<double> Label, ve
     vector<double> error;
     for(auto &data:DataSet_Feature)
         h.push_back(sigmoid(scalarProduct(data,weight)));
-    for(int i=0;i<Label.size();i++)
-        error.push_back(Label[i]-h[i]);
+    for(int i=0;i<Label.size();i++){
+        double dist = Label[i]-h[i];
+        if(abs(dist)<1e-10) dist=0;
+        error.push_back(dist);
+    }
     for(int i=0;i<weight.size();i++){
         weight[i] +=alpha*scalarProduct(dataMatT[i],error);
     }
@@ -166,10 +162,7 @@ int main(){
     for(auto i:w){
         cout<<i<<" ";
     }
-    // vector<double> sss;
-    // sss.push_back(5.2);
-    // sss.push_back(11.2);
-    // cout<<L.pridict(sss)<<endl;
+    cout<<endl;
     vector<vector<double>> Feature_test;
     ofstream f;
     f.open("out.txt", ios::out);
